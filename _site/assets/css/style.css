@@ -322,7 +322,7 @@ a:hover { text-decoration: underline; }
 
 .site-footer-credits { color: #819198; }
 
-body { text-align: justify; overflow-x: hidden; color: #333; font-size: 0.95em; }
+body { text-align: justify; overflow-x: hidden; color: #333; }
 
 .page-header { background-color: white; background-image: none; border-bottom: thin solid white; color: #6F4E37; background: white; }
 
@@ -340,3 +340,11 @@ body { text-align: justify; overflow-x: hidden; color: #333; font-size: 0.95em; 
 .paper-figure { display: flex; flex-direction: column; align-items: center; margin: 3em auto; padding: 1em 0; width: 90%; }
 
 .paper-figure-caption { margin-top: 1em; /* space between image and caption */ text-align: justify; text-justify: inter-word; line-height: 1.5; color: #333; font-size: 0.95em; width: 90%; }
+
+table.audio-table th { font-size: 15px; }
+
+table.audio-table th:first-child { font-weight: 700; width: 400px; min-width: 250px; max-width: 250px; }
+
+table.audio-table tbody td:first-child { font-size: 13px; font-weight: 500; word-break: break-word; }
+
+.audio-table audio { width: 250px; height: 50px; }

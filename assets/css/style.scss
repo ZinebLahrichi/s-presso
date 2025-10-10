@@ -14,7 +14,7 @@ body {
   text-align: justify;
   overflow-x: hidden;
   color: #333;
-  font-size: 0.95em;
+  // font-size: 0.95em;
 }
 
 .page-header {
@@ -85,3 +85,24 @@ body {
   width: 90%;
 }
 
+table.audio-table th {
+  font-size: 15px;
+}
+
+table.audio-table th:first-child {
+  font-weight: 700;
+  width: 400px;
+  min-width: 250px;
+  max-width: 250px;
+}
+
+table.audio-table tbody td:first-child {
+  font-size: 13px;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.audio-table audio {
+  width: 250px;
+  height: 50px;
+}
