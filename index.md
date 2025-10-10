@@ -44,16 +44,18 @@ S-PRESSO compresses 48 kHz sound effects into both continuous and quantized late
 - <strong>Extreme compression regime</strong>:
 The system operates at ultra-low frame rates (down to 1 Hz) and bitrates (down to 0.096 kbps), substantially extending the limits of sound effect compression.
 
-# Experiments and results
-
-The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper.
-
 {% assign audio_ids = 
 "BBC_LAION_BicycleBell15109, BBC_LAION_footstepstonestairwomanstartecho15255, BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641, EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572, EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481, EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280, EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113, FS_LAION_CupsLoud414219, FS_LAION_HollowImpact327468, FS_LAION_vatten90755, " | split: ", " %}
 
 {% assign formats = "wav" | split: ", " %}
 
-## Comparison with continuous baselines
+# Reconstruction performance 
+
+<!-- The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper. The audio clips were selected to represent the diversity of the evaluation datasets (Epidemic sound, BBC and Freesound from the LAION 630K evaluation dataset). We want to stress that our models were not trained on the LAION 630K dataset, and not on music, but we choose to evaluate on a large variety of sounds (including music short samples), also to be fair with our baselines that were trained on general sounds. -->
+
+The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper. The clips were chosen according to their descriptions and source datasets within the LAION 630K evaluation set, to capture the diversity of the evaluation data. We emphasize that our models were <strong> not trained </strong> on the LAION 630K training set. However, we evaluate them on a broad range of sounds (including short music excerpts) to enable a fair comparison with baselines trained on general audio.
+
+## Continuous baselines
 
 <div markdown="0">
 <table class="tableFixHead tableDoubleRows audio-table">
@@ -220,13 +222,16 @@ The tables below provide audio clips for evaluating the reconstruction quality o
 </table>
 </div> 
 
-## Variability of the Diffusion Decoder
+# Decoding variability 
+
+The tables below provide audio clips for evaluating the variability of diffusion sampling for continous and discrete S-presso models across different compression rates. For each example, we provide three reconstructed samples, illustrating that increased compression amplifies variability in the generated audio, showing subtle changes in textures, high-frequency details, and background noise.
+
+## Continuous S-PRESSO (11Hz)
 
 {% assign audio_variability_11Hz_ids = 
 "EPIDEMIC_LAION_ESITUNESFireplaceIgniteGasESFireplaceIgniteGas_66436, EPIDEMIC_LAION_ESITUNESHandSlapClaps3ESHandSlapClaps3_115779, EPIDEMIC_LAION_ESITUNESGlassBump4ESGlassBump4_116600, 
 EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513" | split: ", " %}
 
-Continuous S-PRESSO model at 11Hz.
 
 <div markdown="0">
 <table class="tableFixHead tableDoubleRows audio-table">
@@ -271,7 +276,7 @@ Continuous S-PRESSO model at 11Hz.
 "EPIDEMIC_LAION_ESITUNESHumanBurp9ESHumanBurp9_39116, EPIDEMIC_LAION_ESITUNESPRELStingerShort22ESPRELStingerShort22_66208, EPIDEMIC_LAION_ESITUNESPRELTrailerBed60ESPRELTrailerBed60_54006, 
 EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513" | split: ", " %}
 
-Continuous S-PRESSO model at 1Hz.
+## Continuous S-PRESSO (1Hz).
 
 <div markdown="0">
 <table class="tableFixHead tableDoubleRows audio-table">
@@ -315,7 +320,7 @@ Continuous S-PRESSO model at 1Hz.
 {% assign audio_variability_03kbps_ids = 
 "FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533, FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445, EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627, EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831" | split: ", " %}
 
-Discrete S-PRESSO model at 1Hz, 0.3 kbps.
+## Discrete S-PRESSO (1Hz, 0.3 kbps)
 
 
 <div markdown="0">
@@ -356,8 +361,8 @@ Discrete S-PRESSO model at 1Hz, 0.3 kbps.
 </tbody>
 </table>
 </div> 
- 
-Discrete S-PRESSO model at 1Hz, 0.096 kbps.
+
+## Discrete S-PRESSO (1Hz, 0.096 kbps)
 
 <div markdown="0">
 <table class="tableFixHead tableDoubleRows audio-table">

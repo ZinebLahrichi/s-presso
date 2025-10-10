@@ -144,11 +144,13 @@ The system operates at ultra-low frame rates (down to 1 Hz) and bitrates (down t
   </li>
 </ul>
 
-<h1 id="experiments-and-results">Experiments and results</h1>
+<h1 id="reconstruction-performance">Reconstruction performance</h1>
 
-<p>The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper.</p>
+<!-- The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper. The audio clips were selected to represent the diversity of the evaluation datasets (Epidemic sound, BBC and Freesound from the LAION 630K evaluation dataset). We want to stress that our models were not trained on the LAION 630K dataset, and not on music, but we choose to evaluate on a large variety of sounds (including music short samples), also to be fair with our baselines that were trained on general sounds. -->
 
-<h2 id="comparison-with-continuous-baselines">Comparison with continuous baselines</h2>
+<p>The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper. The clips were chosen according to their descriptions and source datasets within the LAION 630K evaluation set, to capture the diversity of the evaluation data. We emphasize that our models were <strong> not trained </strong> on the LAION 630K training set. However, we evaluate them on a broad range of sounds (including short music excerpts) to enable a fair comparison with baselines trained on general audio.</p>
+
+<h2 id="continuous-baselines">Continuous baselines</h2>
 
 <div>
 <table class="tableFixHead tableDoubleRows audio-table">
@@ -1462,9 +1464,11 @@ The system operates at ultra-low frame rates (down to 1 Hz) and bitrates (down t
 </table>
 </div>
 
-<h2 id="variability-of-the-diffusion-decoder">Variability of the Diffusion Decoder</h2>
+<h1 id="decoding-variability">Decoding variability</h1>
 
-<p>Continuous S-PRESSO model at 11Hz.</p>
+<p>The tables below provide audio clips for evaluating the variability of diffusion sampling for continous and discrete S-presso models across different compression rates. For each example, we provide three reconstructed samples, illustrating that increased compression amplifies variability in the generated audio, showing subtle changes in textures, high-frequency details, and background noise.</p>
+
+<h2 id="continuous-s-presso-11hz">Continuous S-PRESSO (11Hz)</h2>
 
 <div>
 <table class="tableFixHead tableDoubleRows audio-table">
@@ -1644,7 +1648,7 @@ EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen2.wav" type="audio/
 </table>
 </div>
 
-<p>Continuous S-PRESSO model at 1Hz.</p>
+<h2 id="continuous-s-presso-1hz">Continuous S-PRESSO (1Hz).</h2>
 
 <div>
 <table class="tableFixHead tableDoubleRows audio-table">
@@ -1824,7 +1828,7 @@ EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen2.wav" type="audio/
 </table>
 </div>
 
-<p>Discrete S-PRESSO model at 1Hz, 0.3 kbps.</p>
+<h2 id="discrete-s-presso-1hz-03-kbps">Discrete S-PRESSO (1Hz, 0.3 kbps)</h2>
 
 <div>
 <table class="tableFixHead tableDoubleRows audio-table">
@@ -1999,7 +2003,7 @@ EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen2.wav" type="audio/
 </table>
 </div>
 
-<p>Discrete S-PRESSO model at 1Hz, 0.096 kbps.</p>
+<h2 id="discrete-s-presso-1hz-0096-kbps">Discrete S-PRESSO (1Hz, 0.096 kbps)</h2>
 
 <div>
 <table class="tableFixHead tableDoubleRows audio-table">

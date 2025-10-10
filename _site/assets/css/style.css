@@ -328,7 +328,8 @@ body { text-align: justify; overflow-x: hidden; color: #333; }
 
 .main-content { max-width: 1200px; }
 .main-content h1, .main-content h2, .main-content h3, .main-content h4 { text-align: left; color: #0c1f75; background-color: white; border-radius: 5px; width: fit-content; margin-right: 0px; padding: 0 10px; }
-.main-content h1 { font-weight: bold; color: #6F4E37; }
+.main-content h1 { font-weight: bold; color: #3c2003; }
+.main-content h2 { font-weight: bold; color: #6F4E37; }
 
 .project-name { font-size: 35px; text-align: center; }
 
