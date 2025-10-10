@@ -102,7 +102,7 @@ The tables below provide audio clips for evaluating the reconstruction quality o
 
 
 <tbody>
-{% assign characters = "src, stableaudio, spresso25Hz, music2latent, spresso11hz" | split: ", " %}
+{% assign characters = "src, stableaudio, spresso25hz, music2latent, spresso11hz" | split: ", " %}
 {% for audio_id in audio_ids %}
     <tr>
         <td> {{audio_id}}</td>
