@@ -45,15 +45,15 @@ S-PRESSO compresses 48 kHz sound effects into both continuous and quantized late
 The system operates at ultra-low frame rates (down to 1 Hz) and bitrates (down to 0.096 kbps), substantially extending the limits of sound effect compression.
 
 {% assign audio_ids = 
-"BBC_LAION_BicycleBell15109, BBC_LAION_footstepstonestairwomanstartecho15255, BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641, EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572, EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481, EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280, EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113, FS_LAION_CupsLoud414219, FS_LAION_HollowImpact327468, FS_LAION_vatten90755, " | split: ", " %}
+"BBC_LAION_footstepstonestairwomanstartecho15255, BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641, EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572, EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481, EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280, EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113, FS_LAION_CupsLoud414219, FS_LAION_HollowImpact327468, FS_LAION_vatten90755, " | split: ", " %}
 
 {% assign formats = "wav" | split: ", " %}
 
 # Reconstruction performance 
 
-<!-- The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper. The audio clips were selected to represent the diversity of the evaluation datasets (Epidemic sound, BBC and Freesound from the LAION 630K evaluation dataset). We want to stress that our models were not trained on the LAION 630K dataset, and not on music, but we choose to evaluate on a large variety of sounds (including music short samples), also to be fair with our baselines that were trained on general sounds. -->
-
 The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper. The clips were chosen according to their descriptions and source datasets within the LAION 630K evaluation set, to capture the diversity of the evaluation data. We emphasize that our models were <strong> not trained </strong> on the LAION 630K training set. However, we evaluate them on a broad range of sounds (including short music excerpts) to enable a fair comparison with baselines trained on general audio.
+
+☕  *Each audio clip is 5 seconds long. For the best experience and to notice subtle differences, we recommend listening with headphones.*
 
 ## Continuous baselines
 

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /** 1. Set default font family to sans-serif. 2. Prevent iOS text size adjust after orientation change, without disabling user zoom. */
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap");
@@ -342,10 +343,12 @@ body { text-align: justify; overflow-x: hidden; color: #333; }
 
 .paper-figure-caption { margin-top: 1em; /* space between image and caption */ text-align: justify; text-justify: inter-word; line-height: 1.5; color: #333; font-size: 0.95em; width: 90%; }
 
+table.audio-table { max-width: 1400px; /* largeur maximale du tableau */ width: 100%; /* prend tout l'espace disponible jusqu'à max-width */ margin: 0 auto; /* centre horizontalement le tableau */ }
+
 table.audio-table th { font-size: 15px; }
 
-table.audio-table th:first-child { font-weight: 700; width: 400px; min-width: 250px; max-width: 250px; }
+table.audio-table th:first-child { font-weight: 700; min-width: 200px; max-width: 200px; }
 
 table.audio-table tbody td:first-child { font-size: 13px; font-weight: 500; word-break: break-word; }
 
-.audio-table audio { width: 250px; height: 50px; }
+.audio-table audio { width: 125px; height: 50px; }
