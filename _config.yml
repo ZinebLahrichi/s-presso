@@ -2,7 +2,8 @@ title: "S-PRESSO: Ultra Low Bitrate Sound Effect Compression With Diffusion Auto
 github: [metadata]
 
 remote_theme: pages-themes/cayman@v0.2.0
-url: https://github.com/ZinebLahrichi/s-presso
+url: "https://zineblahrichi.github.io"
+baseurl: "/s-presso"
 
 # local testing
 # baseurl: ""
