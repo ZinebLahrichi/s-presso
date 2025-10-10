@@ -1,0 +1,87 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+$electric-blue: #0c2ec7;
+$electric-blue-light: #b6702b;
+$elctric-blue-dark: #0c1f75;
+$coffee-color: #6F4E37;
+$dark-coffee-color: #3c2003;
+
+
+body {
+  text-align: justify;
+  overflow-x: hidden;
+  color: #333;
+  font-size: 0.95em;
+}
+
+.page-header {
+  background-color: white;
+  background-image: none;
+  border-bottom: thin solid white;
+  color: $coffee-color;
+  background: white;
+}
+
+.main-content {
+  h1, h2, h3, h4 {
+    text-align: left;
+    color: $elctric-blue-dark;
+    background-color: white;
+    border-radius: 5px;
+    width: fit-content;
+    margin-right: 0px;
+    padding: 0 10px;
+  }
+  h1 {
+    font-weight: bold;
+    color: $coffee-color
+  }
+  max-width: 1200px;      
+
+}
+
+.project-name {
+  font-size: 35px;
+  text-align: center;
+}
+
+.authors {
+  font-size: 16px;
+  margin-top: 5px;
+
+  .author {
+    margin-right: 10px;
+  }
+
+  a {
+    color: $electric-blue;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.paper-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 3em auto; 
+  padding: 1em 0;
+  width: 90%;
+}
+
+.paper-figure-caption {
+  margin-top: 1em; /* space between image and caption */
+  text-align: justify;
+  text-justify: inter-word;
+  line-height: 1.5;
+  color: #333;
+  font-size: 0.95em;
+  width: 90%;
+}
+

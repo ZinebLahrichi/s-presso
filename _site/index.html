@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>S-PRESSO: Ultra Low Bitrate Sound Effect Compression With Diffusion Autoencoders And Offline Quantization</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="S-PRESSO: Ultra Low Bitrate Sound Effect Compression With Diffusion Autoencoders And Offline Quantization" />
+<meta name="author" content="Zineb Lahrichi" />
+<meta property="og:locale" content="en_US" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="S-PRESSO: Ultra Low Bitrate Sound Effect Compression With Diffusion Autoencoders And Offline Quantization" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="S-PRESSO: Ultra Low Bitrate Sound Effect Compression With Diffusion Autoencoders And Offline Quantization" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","author":{"@type":"Person","name":"Zineb Lahrichi"},"headline":"S-PRESSO: Ultra Low Bitrate Sound Effect Compression With Diffusion Autoencoders And Offline Quantization","name":"S-PRESSO: Ultra Low Bitrate Sound Effect Compression With Diffusion Autoencoders And Offline Quantization","url":"http://localhost:4000/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
+    </head>
+  <body>
+    <a id="skip-to-content" href="#content">Skip to the content.</a>
+
+    <header class="page-header" role="banner">
+      <h1 class="project-name">S-PRESSO: Ultra Low Bitrate Sound Effect Compression With Diffusion Autoencoders And Offline Quantization</h1>
+      <h2 class="project-tagline"></h2>
+      
+      
+        <div class="authors">
+          
+            <a href="https://scholar.google.com/citations?hl=fr&user=YyzTTGkAAAAJ" class="author-link" target="_blank">
+              <strong>Zineb Lahrichi</strong>
+            </a>
+            
+              <a href="mailto:zineb.lahrichi@sony.com" class="author-email" title="Email Zineb Lahrichi">☕</a>
+            
+            
+              <sup>
+                
+                  1,
+                
+                  2
+                
+              </sup>
+            
+            , 
+          
+            <a href="https://scholar.google.com/citations?user=wfZF3E0AAAAJ&hl=en" class="author-link" target="_blank">
+              <strong>Gaëtan Hadjeres</strong>
+            </a>
+            
+            
+              <sup>
+                
+                  1
+                
+              </sup>
+            
+            , 
+          
+            <a href="https://scholar.google.com/citations?user=xn70tPIAAAAJ&hl=fr" class="author-link" target="_blank">
+              <strong>Gaël Richard</strong>
+            </a>
+            
+            
+              <sup>
+                
+                  2
+                
+              </sup>
+            
+            , 
+          
+            <a href="https://scholar.google.com/citations?user=aTBWY2EAAAAJ&hl=fr" class="author-link" target="_blank">
+              <strong>Geoffroy Peeters</strong>
+            </a>
+            
+            
+              <sup>
+                
+                  2
+                
+              </sup>
+            
+            
+          
+        </div>
+
+        
+          <div class="affiliations" style="margin-top: 10px; font-size: 0.9em;">
+            
+              <div><sup>1</sup> Sony AI</div>
+            
+              <div><sup>2</sup> Télécom Paris, LTCI</div>
+            
+          <div> ☕ Contact Author</div>
+          </div>
+        
+      
+
+
+      
+      
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      <figure class="paper-figure">
+  <img src="/assets/images/overview.png" alt="Overview of S-PRESSO" class="paper-figure-img" />     
+  <figcaption class="paper-figure-caption">
+    <strong>Overview of S-PRESSO:</strong> Overview of our method.
+    <strong>Step&nbsp;1:</strong> An audio clip is encoded into latent vectors \(x_0\) by a low-compression audio autoencoder.
+    It is then compressed into latents \(z\), which are upsampled by \(f_\phi\) to condition the decoder \(D_\theta\), 
+    a Diffusion Transformer (DiT) pretrained to reconstruct \(x_0\) from noised inputs.
+    \(D_\theta\) is finetuned using LoRA adapters, jointly trained with the latent encoder \(g_\psi\) and \(f_\phi\).
+    <strong>Step&nbsp;2:</strong> The features \(z\) are then quantized offline into \(z_q\).
+    <strong>Step&nbsp;3:</strong> The diffusion decoder \(D_\theta\) is finetuned on \(z_q\) to compensate for quantization-induced degradation.
+  </figcaption>
+</figure>
+
+<p>Contributions:</p>
+<ul>
+  <li>
+    <p><strong>Unified continuous and discrete compression </strong>:
+S-PRESSO compresses 48 kHz sound effects into both continuous and quantized latent representations, achieving up to 750× compression while maintaining perceptual fidelity.</p>
+  </li>
+  <li>
+    <p><strong>Diffusion-based compression</strong>: A latent diffusion decoder leverages generative priors to reconstruct high-quality audio from embeddings learned by a latent encoder.</p>
+  </li>
+  <li>
+    <p><strong>Extreme compression regime</strong>:
+The system operates at ultra-low frame rates (down to 1 Hz) and bitrates (down to 0.096 kbps), substantially extending the limits of sound effect compression.</p>
+  </li>
+</ul>
+
+<h1 id="experiments-and-results">Experiments and results</h1>
+
+<p>The tables below provide audio clips for evaluating the reconstruction quality of our model in comparison to the baselines presented in the paper.</p>
+
+<h2 id="comparison-with-continuous-baselines">Comparison with continuous baselines</h2>
+
+<div>
+<table class="tableFixHead tableDoubleRows audio-table">
+<colgroup>
+<col />
+<col />
+<col />
+</colgroup>
+<thead>
+<tr class="header">
+<th>  </th>
+<th> Original </th>
+<th> Stable Audio </th>
+<th> S-PRESSO </th>
+<th> Music2Latent </th>
+<th> S-PRESSO </th>
+
+</tr>
+</thead>
+
+<thead>
+<tr class="header">
+<th> Compression Ratio </th>
+<th> / </th>
+<th> 64 </th>
+<th> 68 </th>
+<th> 32 </th>
+<th> 30 </th>
+
+</tr>
+</thead>
+
+<thead>
+<tr class="header">
+<th> Framerate </th>
+<th> / </th>
+<th> 21.5 Hz </th>
+<th> 25 Hz </th>
+<th> 11 Hz </th>
+<th> 11 Hz </th>
+
+</tr>
+</thead>
+
+
+<tbody>
+
+
+    <tr>
+        <td> BBC_LAION_BicycleBell15109</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> BBC_LAION_footstepstonestairwomanstartecho15255</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_CupsLoud414219</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_HollowImpact327468</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_vatten90755</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-stableaudio.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-spresso25Hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-music2latent.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-spresso11hz.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+</tbody> 
+</table> 
+</div>
+
+<h2 id="performance-at-low-bitrates">Performance at low bitrates</h2>
+
+<div>
+<table class="tableFixHead tableDoubleRows audio-table">
+<colgroup>
+<col />
+<col />
+<col />
+</colgroup>
+<thead>
+<tr class="header">
+<th>  </th>
+<th> Original </th>
+<th> Descript </th>
+<th> Semanticodec </th>
+<th> S-PRESSO </th>
+
+</tr>
+<tr class="subheader">
+<th> Bitrate  </th>
+<th> / </th>
+<th> 1.7 kbps </th>
+<th> 1.4 kbps </th>
+<th> 1.32 kbps </th>
+
+</tr>
+</thead>
+<tbody>
+
+
+
+    <tr>
+        <td> BBC_LAION_BicycleBell15109</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> BBC_LAION_footstepstonestairwomanstartecho15255</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_CupsLoud414219</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_HollowImpact327468</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_vatten90755</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-descript-1.7kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-semanticodec-1.4kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-spresso-1.32kbps.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+</tbody>
+</table>
+</div>
+
+<h2 id="performance-at-ultra-low-bitrates">Performance at ultra-low bitrates</h2>
+
+<div>
+<table class="tableFixHead tableDoubleRows audio-table">
+<colgroup>
+<col />
+<col />
+<col />
+</colgroup>
+<thead>
+<tr class="header">
+<th>  </th>
+<th> Original </th>
+<th> Semanticodec </th>
+<th> S-PRESSO </th>
+<th> S-PRESSO </th>
+
+</tr>
+</thead>
+<thead>
+<tr class="header">
+<th> Bitrate  </th>
+<th> / </th>
+<th> 0.3125 kbps </th>
+<th> 0.3 kbps </th>
+<th> 0.096 kbps </th>
+
+</tr>
+</thead>
+<tbody>
+
+
+    <tr>
+        <td> BBC_LAION_BicycleBell15109</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-src.wav" alt="audioBBC_LAION_BicycleBell15109_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-semanticodec-0.3125kbps.wav" alt="audioBBC_LAION_BicycleBell15109_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-spresso-0.3kbps.wav" alt="audioBBC_LAION_BicycleBell15109_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_BicycleBell15109-spresso-0.096kbps.wav" alt="audioBBC_LAION_BicycleBell15109_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> BBC_LAION_footstepstonestairwomanstartecho15255</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-src.wav" alt="audioBBC_LAION_footstepstonestairwomanstartecho15255_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-semanticodec-0.3125kbps.wav" alt="audioBBC_LAION_footstepstonestairwomanstartecho15255_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-spresso-0.3kbps.wav" alt="audioBBC_LAION_footstepstonestairwomanstartecho15255_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_footstepstonestairwomanstartecho15255-spresso-0.096kbps.wav" alt="audioBBC_LAION_footstepstonestairwomanstartecho15255_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-src.wav" alt="audioBBC_LAION_Typewriter_ClosePerspectivemediumtyping14641_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-semanticodec-0.3125kbps.wav" alt="audioBBC_LAION_Typewriter_ClosePerspectivemediumtyping14641_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-spresso-0.3kbps.wav" alt="audioBBC_LAION_Typewriter_ClosePerspectivemediumtyping14641_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/BBC_LAION_Typewriter_ClosePerspectivemediumtyping14641-spresso-0.096kbps.wav" alt="audioBBC_LAION_Typewriter_ClosePerspectivemediumtyping14641_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-src.wav" alt="audioEPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-semanticodec-0.3125kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-spresso-0.3kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572-spresso-0.096kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESCrashConcreteDebris2ESCrashConcreteDebris2_68572_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-src.wav" alt="audioEPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-semanticodec-0.3125kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-spresso-0.3kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481-spresso-0.096kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESJungleBirds7ESJungleBirds7_122481_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-src.wav" alt="audioEPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-semanticodec-0.3125kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-spresso-0.3kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280-spresso-0.096kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESNinjaStar1ESNinjaStar1_51280_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-src.wav" alt="audioEPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-semanticodec-0.3125kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-spresso-0.3kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/EPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113-spresso-0.096kbps.wav" alt="audioEPIDEMIC_LAION_ESITUNESSciFiVoiceClip176ESSciFiVoiceClip176_57113_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_CupsLoud414219</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-src.wav" alt="audioFS_LAION_CupsLoud414219_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-semanticodec-0.3125kbps.wav" alt="audioFS_LAION_CupsLoud414219_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-spresso-0.3kbps.wav" alt="audioFS_LAION_CupsLoud414219_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_CupsLoud414219-spresso-0.096kbps.wav" alt="audioFS_LAION_CupsLoud414219_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_HollowImpact327468</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-src.wav" alt="audioFS_LAION_HollowImpact327468_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-semanticodec-0.3125kbps.wav" alt="audioFS_LAION_HollowImpact327468_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-spresso-0.3kbps.wav" alt="audioFS_LAION_HollowImpact327468_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_HollowImpact327468-spresso-0.096kbps.wav" alt="audioFS_LAION_HollowImpact327468_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_vatten90755</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-src.wav" alt="audioFS_LAION_vatten90755_src" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-semanticodec-0.3125kbps.wav" alt="audioFS_LAION_vatten90755_semanticodec-0.3125kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-spresso-0.3kbps.wav" alt="audioFS_LAION_vatten90755_spresso-0.3kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/reconstruction-fidelity/FS_LAION_vatten90755-spresso-0.096kbps.wav" alt="audioFS_LAION_vatten90755_spresso-0.096kbps" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+</tbody>
+</table>
+</div>
+
+<h2 id="variability-of-the-diffusion-decoder">Variability of the Diffusion Decoder</h2>
+
+<p>Continuous S-PRESSO model at 11Hz.</p>
+
+<div>
+<table class="tableFixHead tableDoubleRows audio-table">
+<colgroup>
+<col />
+<col />
+<col />
+</colgroup>
+<thead>
+<tr class="header">
+<th>  </th>
+<th> Original </th>
+<th> 1 </th>
+<th> 2 </th>
+<th> 3 </th>
+
+</tr>
+</thead>
+
+<tbody>
+
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESFireplaceIgniteGasESFireplaceIgniteGas_66436</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESFireplaceIgniteGasESFireplaceIgniteGas_66436-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESFireplaceIgniteGasESFireplaceIgniteGas_66436-gen0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESFireplaceIgniteGasESFireplaceIgniteGas_66436-gen1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESFireplaceIgniteGasESFireplaceIgniteGas_66436-gen2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESHandSlapClaps3ESHandSlapClaps3_115779</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESHandSlapClaps3ESHandSlapClaps3_115779-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESHandSlapClaps3ESHandSlapClaps3_115779-gen0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESHandSlapClaps3ESHandSlapClaps3_115779-gen1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESHandSlapClaps3ESHandSlapClaps3_115779-gen2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESGlassBump4ESGlassBump4_116600</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESGlassBump4ESGlassBump4_116600-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESGlassBump4ESGlassBump4_116600-gen0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESGlassBump4ESGlassBump4_116600-gen1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/EPIDEMIC_LAION_ESITUNESGlassBump4ESGlassBump4_116600-gen2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> 
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-11Hz/
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+</tbody>
+</table>
+</div>
+
+<p>Continuous S-PRESSO model at 1Hz.</p>
+
+<div>
+<table class="tableFixHead tableDoubleRows audio-table">
+<colgroup>
+<col />
+<col />
+<col />
+</colgroup>
+<thead>
+<tr class="header">
+<th>  </th>
+<th> Original </th>
+<th> 1 </th>
+<th> 2 </th>
+<th> 3 </th>
+
+</tr>
+</thead>
+
+<tbody>
+
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESHumanBurp9ESHumanBurp9_39116</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESHumanBurp9ESHumanBurp9_39116-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESHumanBurp9ESHumanBurp9_39116-gen0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESHumanBurp9ESHumanBurp9_39116-gen1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESHumanBurp9ESHumanBurp9_39116-gen2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESPRELStingerShort22ESPRELStingerShort22_66208</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESPRELStingerShort22ESPRELStingerShort22_66208-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESPRELStingerShort22ESPRELStingerShort22_66208-gen0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESPRELStingerShort22ESPRELStingerShort22_66208-gen1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESPRELStingerShort22ESPRELStingerShort22_66208-gen2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESPRELTrailerBed60ESPRELTrailerBed60_54006</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESPRELTrailerBed60ESPRELTrailerBed60_54006-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESPRELTrailerBed60ESPRELTrailerBed60_54006-gen0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESPRELTrailerBed60ESPRELTrailerBed60_54006-gen1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/EPIDEMIC_LAION_ESITUNESPRELTrailerBed60ESPRELTrailerBed60_54006-gen2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> 
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz/
+EPIDEMIC_LAION_ESITUNESPresentPickUpESPresentPickUp_36513-gen2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+</tbody>
+</table>
+</div>
+
+<p>Discrete S-PRESSO model at 1Hz, 0.3 kbps.</p>
+
+<div>
+<table class="tableFixHead tableDoubleRows audio-table">
+<colgroup>
+<col />
+<col />
+<col />
+</colgroup>
+<thead>
+<tr class="header">
+<th>  </th>
+<th> Original </th>
+<th> 1 </th>
+<th> 2 </th>
+<th> 3 </th>
+
+</tr>
+</thead>
+
+<tbody>
+
+
+    <tr>
+        <td> FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533-g0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533-g1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533-g2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445-g0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445-g1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445-g2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627-g0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627-g1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627-g2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831-g0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831-g1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-03kbps/EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831-g2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+</tbody>
+</table>
+</div>
+
+<p>Discrete S-PRESSO model at 1Hz, 0.096 kbps.</p>
+
+<div>
+<table class="tableFixHead tableDoubleRows audio-table">
+<colgroup>
+<col />
+<col />
+<col />
+</colgroup>
+<thead>
+<tr class="header">
+<th>  </th>
+<th> Original </th>
+<th> 1 </th>
+<th> 2 </th>
+<th> 3 </th>
+
+</tr>
+</thead>
+
+<tbody>
+
+
+    <tr>
+        <td> FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533-g0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533-g1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/FS_LAION_WoodpeckerinwoodedsuburbanvillagenearMoscow432533-g2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445-g0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445-g1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/FS_LAION_FenderChromaPolarisSquareFilterE352E29CHT289445-g2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627-g0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627-g1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/EPIDEMIC_LAION_ESITUNESLaserShotSynth105ESLaserShotSynth105_137627-g2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+    <tr>
+        <td> EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831</td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831-src.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831-g0.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831-g1.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+        <td>
+            <audio controls="" preload="metadata">
+                
+                    <source src="/assets/audio/variability/s-presso-1Hz-0.096kbps/EPIDEMIC_LAION_ESITUNESCabinetDoorOpen16ESCabinetDoorOpen16_91831-g2.wav" type="audio/wav" />
+                
+            </audio>
+        </td>
+        
+    </tr>
+
+</tbody>
+</table>
+</div>
+
+
+      <footer class="site-footer">
+        
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.</span>
+      </footer>
+    </main>
+  </body>
+</html>
