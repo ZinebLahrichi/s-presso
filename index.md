@@ -204,6 +204,7 @@ The tables below provide audio clips for evaluating the reconstruction quality o
 {% assign characters = "src, semanticodec-0.3125kbps, spresso-0.3kbps, spresso-0.096kbps" | split: ", " %}
 {% for audio_id in audio_ids %}
     <tr>
+        <td> </td>
         {% for char in characters %}
         <td>
             <audio controls preload='metadata'>
