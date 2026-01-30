@@ -182,6 +182,7 @@ The tables below provide audio clips for evaluating the reconstruction quality o
 </colgroup>
 <thead>
 <tr class="header">
+<th> </th>
 <th> Original </th>
 <th> Semanticodec </th>
 <th> S-PRESSO </th>
@@ -191,6 +192,7 @@ The tables below provide audio clips for evaluating the reconstruction quality o
 </thead>
 <thead>
 <tr class="header">
+<th> Bitrate  </th>
 <th> / </th>
 <th> 0.3125 kbps </th>
 <th> 0.3 kbps </th>
