@@ -133,6 +133,7 @@ The tables below provide audio clips for evaluating the reconstruction quality o
 </colgroup>
 <thead>
 <tr class="header">
+<th> </th>
 <th> Original </th>
 <th> Descript </th>
 <th> Semanticodec </th>
@@ -140,6 +141,7 @@ The tables below provide audio clips for evaluating the reconstruction quality o
 
 </tr>
 <tr class="subheader">
+<th> Bitrate  </th>
 <th> / </th>
 <th> 1.7 kbps </th>
 <th> 1.4 kbps </th>
@@ -152,6 +154,7 @@ The tables below provide audio clips for evaluating the reconstruction quality o
 {% assign characters = "src, descript-1.7kbps, semanticodec-1.4kbps, spresso-1.32kbps" | split: ", " %}
 {% for audio_id in audio_ids %}
     <tr>
+        <td> </td>
         {% for char in characters %}
         <td>
             <audio controls preload='metadata'>
@@ -308,9 +311,7 @@ The tables below provide audio clips for evaluating the variability of diffusion
 </div> 
 
 {% assign audio_variability_03kbps_ids = 
-"FS_LAION_909ch199758, FS_LAION_20071101screech0643430, 
-FS_LAION_Choping542154, FS_LAION_BinauralBongosmictest171711,
-FS_LAION_DrumLoopRock0301110bpmReverb03254618" | split: ", " %}
+"FS_LAION_909ch199758, FS_LAION_20071101screech0643430, FS_LAION_Choping542154, FS_LAION_BinauralBongosmictest171711, FS_LAION_DrumLoopRock0301110bpmReverb03254618" | split: ", " %}
 
 ## Discrete S-PRESSO (1Hz, 0.3 kbps)
 
